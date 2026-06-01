@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Contable 2026 - Hub de Innovación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfaf7;
+            color: #2d2d2d;
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 195, 163, 0.3);
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid #b38b59;
+            color: #b38b59;
+        }
+
+        .view-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feature-tag {
+            background: #f3f4f6;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+    <!-- Navegación -->
+    <nav class="sticky top-0 z-50 bg-white/95 border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="showMainView()">
+                    <span class="text-2xl">📊</span>
+                    <span class="font-bold text-xl tracking-tight text-stone-800">IA CONTABLE <span class="text-stone-400 font-light">2026</span></span>
+                </div>
+                <div id="mainNavLinks" class="hidden md:flex space-x-8">
+                    <button onclick="scrollToSection('home')" class="nav-link font-medium text-sm">Inicio</button>
+                    <button onclick="scrollToSection('explorer')" class="nav-link font-medium text-sm">Top 10</button>
+                    <button onclick="scrollToSection('presentation')" class="nav-link font-medium text-sm">Estrategia</button>
+                </div>
+                <div id="detailNavLinks" class="hidden flex items-center">
+                    <button onclick="showMainView()" class="flex items-center gap-2 text-stone-500 hover:text-stone-800 transition text-sm font-bold">
+                        <span>←</span> VOLVER AL EXPLORADOR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- VISTA PRINCIPAL -->
+    <main id="mainView" class="view-transition">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Hero Section -->
+            <section id="home" class="mb-16">
+                <div class="bg-stone-100 rounded-[2.5rem] p-8 md:p-16 flex flex-col lg:flex-row items-center gap-12 border border-stone-200">
+                    <div class="flex-1">
+                        <span class="inline-block px-4 py-1.5 bg-stone-800 text-white text-[10px] font-bold tracking-widest rounded-full mb-6">REPORTE MAYO 2026</span>
+                        <h1 class="text-5xl md:text-6xl font-black text-stone-900 mb-6 leading-[1.1]">Gestión Autónoma de Siguiente Nivel</h1>
+                        <p class="text-xl text-stone-600 mb-10 leading-relaxed max-w-xl">
+                            La contabilidad ha dejado de ser un registro del pasado para convertirse en un <strong>motor de predicción</strong>. Explore las 10 herramientas que definen el éxito administrativo este año.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="scrollToSection('explorer')" class="bg-[#b38b59] hover:bg-[#967348] text-white px-8 py-4 rounded-2xl font-bold transition shadow-lg shadow-[#b38b59]/20">Explorar el Top 10</button>
+                            <div class="flex items-center gap-4 px-6 border-l-2 border-stone-300">
+                                <div class="text-3xl font-bold text-stone-800">95%</div>
+                                <div class="text-[11px] uppercase tracking-wider font-bold text-stone-500 leading-tight">Precisión en<br>Agentes Autónomos</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 w-full glass-card p-8 rounded-3xl shadow-xl border-stone-200">
+                        <h3 class="text-center font-bold mb-6 text-stone-800 uppercase tracking-widest text-xs">Ecosistema IA 2026</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Explorer Section -->
+            <section id="explorer" class="mb-16 scroll-mt-24">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div>
+                        <h2 class="text-4xl font-black text-stone-900 mb-3">Ranking de Soluciones</h2>
+                        <p class="text-stone-500">Seleccione una categoría o haga clic en una ficha para ver detalles técnicos profundos.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterTools('all')" class="filter-btn active px-6 py-2.5 rounded-xl bg-stone-800 text-white text-xs font-bold transition">Todo</button>
+                        <button onclick="filterTools('Autónoma')" class="filter-btn px-6 py-2.5 rounded-xl bg-white border border-stone-200 text-stone-600 text-xs font-bold hover:bg-stone-50 transition">Contabilidad</button>
+                        <button onclick="filterTools('Documentos')" class="filter-btn px-6 py-2.5 rounded-xl bg-white border border-stone-200 text-stone-600 text-xs font-bold hover:bg-stone-50 transition">AP/Facturas</button>
+                        <button onclick="filterTools('Cierre')" class="filter-btn px-6 py-2.5 rounded-xl bg-white border border-stone-200 text-stone-600 text-xs font-bold hover:bg-stone-50 transition">Auditoría</button>
+                    </div>
+                </div>
+
+                <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Generado por JS -->
+                </div>
+            </section>
+
+            <!-- Presentation Structure -->
+            <section id="presentation" class="mb-16 scroll-mt-24">
+                <div class="bg-stone-900 rounded-[2.5rem] p-10 md:p-16 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                        <span class="text-[200px] font-black italic leading-none">STRATEGY</span>
+                    </div>
+                    <div class="relative z-10 max-w-3xl">
+                        <h2 class="text-3xl font-black mb-6">Guía para tu Presentación Ejecutiva</h2>
+                        <p class="text-stone-400 mb-12 text-lg">Estructura paso a paso basada en el informe para impactar a tu audiencia.</p>
+                        
+                        <div id="slideContent" class="bg-white/5 border border-white/10 p-10 rounded-3xl mb-10 min-h-[220px]">
+                            <!-- Contenido slide -->
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-6">
+                            <div class="flex gap-3" id="stepIndicators"></div>
+                            <div class="flex gap-4">
+                                <button onclick="prevSlide()" class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 hover:bg-white/10 transition">←</button>
+                                <button onclick="nextSlide()" class="px-10 h-12 bg-white text-stone-900 rounded-full font-bold hover:bg-stone-100 transition">Siguiente Diapositiva</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- VISTA DE DETALLE (Oculta por defecto) -->
+    <main id="detailView" class="hidden view-transition pt-8">
+        <div class="max-w-5xl mx-auto px-4 pb-20">
+            <div id="detailContent" class="fade-in">
+                <!-- Generado dinámicamente al hacer clic -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-stone-200 py-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="mb-8 flex justify-center space-x-4 opacity-50">
+                <span class="text-2xl">⚡</span>
+                <span class="text-2xl">🛡️</span>
+                <span class="text-2xl">📈</span>
+            </div>
+            <p class="text-stone-400 text-xs font-bold uppercase tracking-widest">© 2026 Informe Tecnológico de IA Contable • Estrategia de Transformación Digital</p>
+        </div>
+    </footer>
+
+    <script>
+        // DATA EXTENDIDA CON CARACTERÍSTICAS
+        const tools = [
+            { 
+                id: 1, name: "LayerNext", cat: "Autónoma", impact: 95, icon: "🏢",
+                short: "CFO Autónomo para PYMEs con cierre continuo.",
+                features: ["Generación de P&L instantáneo", "Flujo de caja predictivo", "Multi-banco sync nativo", "Categorización zero-touch"],
+                detail: "LayerNext utiliza una red de agentes que trabajan 24/7. No espera a que termine el mes para procesar datos; cada transacción se clasifica y concilia en segundos, permitiendo que el balance siempre esté actualizado para la toma de decisiones.",
+                case: "Ideal para Startups que necesitan controlar su 'burn rate' semanal sin contratar un CFO a tiempo completo.",
+                integration: 90, power: 95, ease: 88
+            },
+            { 
+                id: 2, name: "Sage Copilot", cat: "Autónoma", impact: 90, icon: "🛡️",
+                short: "IA nativa para Sage Intacct y gestión corporativa.",
+                features: ["Detección de anomalías en asientos", "Consolidación multi-divisa IA", "Workflow de aprobación inteligente", "Auditoría interna continua"],
+                detail: "Sage ha integrado agentes de razonamiento dentro de su núcleo ERP. Su Copilot puede sugerir ajustes contables complejos basados en la normativa local de más de 100 países.",
+                case: "Empresas multinacionales que buscan reducir el riesgo de fraude y acelerar la consolidación internacional.",
+                integration: 100, power: 92, ease: 70
+            },
+            { 
+                id: 4, name: "Vic.ai", cat: "Documentos", impact: 98, icon: "📄",
+                short: "El estándar de oro en procesamiento masivo de facturas.",
+                features: ["Extracción sin plantillas (Zero-template)", "Auto-codificación contable", "Validación de PO Matching", "Detección de duplicados global"],
+                detail: "Vic.ai no es un OCR tradicional. Entiende el contexto de la factura. Aprende cómo codifica tu equipo y, tras un breve periodo de entrenamiento, puede aprobar facturas sin intervención humana.",
+                case: "Centros de Servicios Compartidos (SSC) que procesan más de 5,000 facturas mensuales.",
+                integration: 85, power: 98, ease: 80
+            },
+            { 
+                id: 7, name: "Numeric", cat: "Cierre", impact: 92, icon: "📊",
+                short: "Control y visibilidad total sobre el cierre contable.",
+                features: ["Análisis de variaciones automático", "Flujo de trabajo colaborativo", "Checklist de cierre dinámico", "Sincronización con NetSuite/Sage"],
+                detail: "Numeric revoluciona el 'Month-end close'. Su motor de IA redacta automáticamente las razones de las variaciones de saldo respecto al presupuesto o al mes anterior.",
+                case: "Equipos de Controlling que pasan demasiado tiempo investigando 'por qué' cambiaron las cifras.",
+                integration: 92, power: 85, ease: 95
+            },
+            { 
+                id: 9, name: "TaxGPT", cat: "Cierre", impact: 82, icon: "⚖️",
+                short: "Cumplimiento tributario sin alucinaciones.",
+                features: ["Consulta de normativa en tiempo real", "Auditoría preventiva de IVA", "Cálculo automático de retenciones", "Citación de códigos fiscales"],
+                detail: "TaxGPT utiliza RAG (Retrieval-Augmented Generation) para asegurar que cada respuesta esté basada en la ley vigente de mayo 2026, evitando los errores de los modelos de lenguaje generales.",
+                case: "Asesores fiscales que necesitan validar criterios complejos en segundos.",
+                integration: 60, power: 88, ease: 92
+            }
+            // Los demás siguen la misma estructura para el grid...
+        ];
+
+        // Añadir el resto de herramientas simplificadas para el explorador
+        const moreTools = [
+            { id: 3, name: "Docyt AI", cat: "Autónoma", impact: 85, icon: "🏬", short: "Conciliación multi-sitio para retail.", features: ["Sync con POS", "GARY conversational AI"], detail: "Especialista en negocios físicos.", integration: 80, power: 75, ease: 90 },
+            { id: 5, name: "BILL AI", cat: "Documentos", impact: 80, icon: "💳", short: "Agentes para gestión de proveedores.", features: ["W-9 Agent", "Pagos automáticos"], detail: "Simplifica el flujo de egresos.", integration: 90, power: 70, ease: 95 },
+            { id: 6, name: "Dext Prepare", cat: "Documentos", impact: 88, icon: "📸", short: "Captura perfecta de tiques físicos.", features: ["OCR alta definición", "División de impuestos"], detail: "La favorita de los despachos pequeños.", integration: 85, power: 78, ease: 100 },
+            { id: 8, name: "Botkeeper", cat: "Cierre", impact: 85, icon: "🤝", short: "Escalabilidad para firmas contables.", features: ["Triage de emails", "Bookkeeping híbrido"], detail: "Combina IA con soporte humano.", integration: 75, power: 82, ease: 85 },
+            { id: 10, name: "MS Copilot", cat: "Analítica", impact: 90, icon: "💻", short: "Inteligencia en Excel y Power BI.", features: ["Fórmulas naturales", "Dashboards instantáneos"], detail: "La herramienta de análisis universal.", integration: 100, power: 90, ease: 88 }
+        ];
+
+        const allTools = [...tools, ...moreTools];
+
+        const slides = [
+            { title: "La Revolución 2026", content: "Presenta cómo el rol administrativo mutó de 'digitador' a 'supervisor de agentes'.", color: "text-stone-800" },
+            { title: "Motores Autónomos", content: "Enfócate en LayerNext y Sage. Explica que el 'mes contable' ya no existe; todo es flujo continuo.", color: "text-[#b38b59]" },
+            { title: "Eliminando la Fricción", content: "Muestra cómo Vic.ai y Dext eliminan el 95% de la carga de entrada de datos.", color: "text-stone-800" },
+            { title: "Inteligencia Estratégica", content: "Cierra con Numeric y TaxGPT: el valor real está en el análisis y el cumplimiento.", color: "text-[#b38b59]" }
+        ];
+
+        let currentSlideIndex = 0;
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTools('all');
+            renderSlide();
+            initCharts();
+        });
+
+        // NAVEGACIÓN ENTRE VISTAS
+        function showToolDetail(id) {
+            const tool = allTools.find(t => t.id === id);
+            const mainView = document.getElementById('mainView');
+            const detailView = document.getElementById('detailView');
+            const detailContent = document.getElementById('detailContent');
+            const mainNav = document.getElementById('mainNavLinks');
+            const detailNav = document.getElementById('detailNavLinks');
+
+            // Renderizado del contenido detallado
+            detailContent.innerHTML = `
+                <div class="mb-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-6xl">${tool.icon}</span>
+                        <div>
+                            <span class="text-xs font-bold text-[#b38b59] uppercase tracking-widest">${tool.cat}</span>
+                            <h2 class="text-5xl font-black text-stone-900">${tool.name}</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-12">
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
+                                <h3 class="text-xl font-bold mb-4">Análisis de la Herramienta</h3>
+                                <p class="text-stone-600 leading-relaxed text-lg mb-6">${tool.detail || tool.short}</p>
+                                <div class="p-6 bg-stone-50 rounded-2xl border-l-4 border-[#b38b59]">
+                                    <h4 class="font-bold text-sm mb-2 uppercase text-stone-400">Caso de Uso Principal</h4>
+                                    <p class="text-stone-800 font-medium">${tool.case || 'Optimización de flujos de trabajo administrativos complejos.'}</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-white p-8 rounded-3xl border border-stone-200">
+                                    <h3 class="font-bold mb-6 flex items-center gap-2">
+                                        <span class="text-[#b38b59]">⭐</span> Características Clave
+                                    </h3>
+                                    <ul class="space-y-3">
+                                        ${tool.features.map(f => `
+                                            <li class="flex items-center gap-3 text-sm text-stone-600">
+                                                <span class="w-1.5 h-1.5 bg-[#b38b59] rounded-full"></span> ${f}
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-8 rounded-3xl border border-stone-200">
+                                    <h3 class="font-bold mb-6 flex items-center gap-2">
+                                        <span class="text-[#b38b59]">📊</span> Métricas de Desempeño
+                                    </h3>
+                                    <div class="space-y-6">
+                                        ${renderMetric("Integración", tool.integration || 80)}
+                                        ${renderMetric("Potencia IA", tool.power || 80)}
+                                        ${renderMetric("Facilidad", tool.ease || 80)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="bg-stone-900 text-white p-8 rounded-3xl shadow-xl">
+                                <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">Impacto en Eficiencia</h4>
+                                <div class="text-6xl font-black mb-2">${tool.impact}%</div>
+                                <p class="text-stone-400 text-sm">Reducción estimada de carga operativa manual.</p>
+                                <div class="mt-8 pt-8 border-t border-white/10">
+                                    <button onclick="showMainView()" class="w-full py-4 bg-white text-stone-900 rounded-xl font-bold hover:bg-stone-100 transition">
+                                        Solicitar Demo Virtual
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Toggle Vistas
+            mainView.classList.add('hidden');
+            detailView.classList.remove('hidden');
+            mainNav.classList.add('hidden');
+            detailNav.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showMainView() {
+            document.getElementById('mainView').classList.remove('hidden');
+            document.getElementById('detailView').classList.add('hidden');
+            document.getElementById('mainNavLinks').classList.remove('hidden');
+            document.getElementById('detailNavLinks').classList.add('hidden');
+        }
+
+        function renderMetric(label, value) {
+            return `
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-2">
+                        <span>${label}</span>
+                        <span>${value}%</span>
+                    </div>
+                    <div class="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-[#b38b59]" style="width: ${value}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // EXPLORADOR
+        function renderTools(filter) {
+            const grid = document.getElementById('toolsGrid');
+            grid.innerHTML = '';
+            
+            const filtered = filter === 'all' ? allTools : allTools.filter(t => t.cat === filter);
+            
+            filtered.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'fade-in bg-white p-8 rounded-[2rem] border border-stone-200 hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-300 group flex flex-col cursor-pointer';
+                div.onclick = () => showToolDetail(tool.id);
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-14 h-14 bg-stone-50 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            ${tool.icon}
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-stone-300 group-hover:text-[#b38b59] transition-colors">${tool.cat}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-stone-800 mb-3">${tool.name}</h3>
+                    <p class="text-sm text-stone-500 mb-8 leading-relaxed flex-grow">${tool.short}</p>
+                    <div class="pt-6 border-t border-stone-100 flex items-center justify-between">
+                        <span class="text-xs font-bold text-stone-400">EFICIENCIA +${tool.impact}%</span>
+                        <span class="text-xs font-black text-stone-800 group-hover:translate-x-1 transition-transform">VER DETALLES →</span>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function filterTools(cat) {
+            renderTools(cat);
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-stone-800', 'text-white', 'active');
+                btn.classList.add('bg-white', 'text-stone-600');
+            });
+            event.target.classList.remove('bg-white', 'text-stone-600');
+            event.target.classList.add('bg-stone-800', 'text-white', 'active');
+        }
+
+        // SLIDES
+        function renderSlide() {
+            const container = document.getElementById('slideContent');
+            const indicators = document.getElementById('stepIndicators');
+            const slide = slides[currentSlideIndex];
+            
+            container.innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl font-black mb-4 ${slide.color}">${slide.title}</h3>
+                    <p class="text-xl leading-relaxed text-stone-300">${slide.content}</p>
+                </div>
+            `;
+
+            indicators.innerHTML = slides.map((_, i) => `
+                <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === currentSlideIndex ? 'bg-white w-8' : 'bg-white/20'}"></div>
+            `).join('');
+        }
+
+        function nextSlide() { currentSlideIndex = (currentSlideIndex + 1) % slides.length; renderSlide(); }
+        function prevSlide() { currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length; renderSlide(); }
+
+        function scrollToSection(id) {
+            showMainView();
+            setTimeout(() => {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        // CHARTS
+        function initCharts() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Contabilidad', 'Documentos', 'Auditoría', 'Analítica'],
+                    datasets: [{
+                        data: [35, 30, 25, 10],
+                        backgroundColor: ['#b38b59', '#e6decb', '#2d2d2d', '#8c7a6b'],
+                        hoverOffset: 15,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
